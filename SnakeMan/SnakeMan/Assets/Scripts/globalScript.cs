@@ -42,7 +42,14 @@ public class globalScript : MonoBehaviour
         // Check if countdown run out
         if (timer <= 0.0f)
         {
-            SceneManager.LoadScene("endScreen");
+            if (score > e1Score)
+            {
+                SceneManager.LoadScene("endScreen");
+            }
+            else
+            {
+                SceneManager.LoadScene("loseEndScreen");
+            }
         }
     }
 }

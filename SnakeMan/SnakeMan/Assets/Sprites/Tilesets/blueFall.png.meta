@@ -773,11 +773,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fbbe19651c699c044b6639a19dc9a7dd
       internalID: 2433819908058609187
-      vertices: []
-      indices: 
-      edges: []
       weights: []
     - serializedVersion: 2
       name: blueFall_28
