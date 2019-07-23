@@ -43530,6 +43530,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 586104996312200660, guid: 0f8f0d0379ea7034f953fe2e2aa33449,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 8654610238543874371, guid: 0f8f0d0379ea7034f953fe2e2aa33449,
         type: 3}
       propertyPath: m_LocalPosition.x
