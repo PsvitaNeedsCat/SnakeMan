@@ -28,12 +28,6 @@ public class playerScript : MonoBehaviour
     private float powerupCooldown = 20.0f; // In seconds
     private bool extensionActivated = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     private void Awake()
     {
         hSpeed = Input.GetAxisRaw("Horizontal");
@@ -65,7 +59,14 @@ public class playerScript : MonoBehaviour
         if (lives <= 0)
         {
             // Gameover
-            SceneManager.LoadScene("endScreen");
+            if (globalScript.score > globalScript.e1Score)
+            {
+                SceneManager.LoadScene("endScreen");
+            }
+            else
+            {
+                SceneManager.LoadScene("loseEndScreen");
+            }
         }
 
         // Movement
