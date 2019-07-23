@@ -11,6 +11,10 @@ public class playerScript : MonoBehaviour
     private bool isDead = false;
     private float deadCooldown = 1.0f;
 
+    // Pellet cooldown
+    private bool pelletCollected = false;
+    private float pelletCooldown = 0.5f;
+
     public GameObject currentFloorTile;
     public CircleCollider2D floorCollider;
 
@@ -47,6 +51,15 @@ public class playerScript : MonoBehaviour
             {
                 isDead = false;
                 deadCooldown = 1.0f;
+            }
+        }
+        if (pelletCollected)
+        {
+            pelletCooldown -= Time.deltaTime;
+            if (pelletCooldown <= 0.0f)
+            {
+                pelletCollected = false;
+                pelletCooldown = 0.5f;
             }
         }
         if (lives <= 0)
@@ -146,10 +159,15 @@ public class playerScript : MonoBehaviour
         }
         if (collision.tag == "Pellet")
         {
-            Destroy(collision.gameObject);
+            if (!pelletCollected)
+            {
+                pelletCollected = true;
 
-            globalScript.score += 10;
-            GameObject.Find("score").GetComponent<TextMesh>().text = globalScript.score.ToString();
+                Destroy(collision.gameObject);
+
+                globalScript.score += 10;
+                GameObject.Find("score").GetComponent<TextMesh>().text = globalScript.score.ToString();
+            }
         }
     }
 
@@ -176,11 +194,7 @@ public class playerScript : MonoBehaviour
                 Respawn();
             }
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Enemy Cape Segment")
+        else if (collision.collider.tag == "Enemy Cape Segment")
         {
             if (!isDead)
             {
@@ -190,11 +204,7 @@ public class playerScript : MonoBehaviour
                 lives -= 1;
                 GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
 
-                // Respawn enemy(s)
-                GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
-
-                // Respawn player
-                Respawn();
+                // Everyone should already be respawned
             }
         }
     }

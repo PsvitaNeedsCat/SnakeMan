@@ -9,6 +9,9 @@ public class endScreenScript : MonoBehaviour
     {
         // Set score
         GameObject.Find("score").GetComponent<TextMesh>().text = globalScript.score.ToString();
+
+        // Set enemy score
+        GameObject.Find("enemyScore").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
     }
 
     // Update is called once per frame
