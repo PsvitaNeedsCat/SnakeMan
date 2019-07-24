@@ -4,22 +4,40 @@ using UnityEngine;
 
 public class BasicEnemyScript : MonoBehaviour
 {
+    // USED FOR BASE FUNCTIONALITY
+    // --------------------------------------------------------
     public CircleCollider2D northEastCollider;
     public CircleCollider2D northWestCollider;
     public CircleCollider2D southEastCollider;
     public CircleCollider2D southWestCollider;
+    public float Speed;
+    // --------------------------------------------------------
 
+    // USED FOR A* PATHFINDING
+    // --------------------------------------------------------
+    private GameObject RandomTile;
     public GameObject CurrentFloorTile;
+    public GameObject PreviousFloorTile;
     public GameObject PlayerFloorTile;
-
     private GameObject CurrentTile;
     public GameObject SourceTile;
     public GameObject DestinationTile;
-
     private List<GameObject> OpenList;
     private List<GameObject> ClosedList;
+    // --------------------------------------------------------
 
-    public float Speed;
+    // USED FOR STATE MACHINE
+    // --------------------------------------------------------
+    private const int stateUndefined = -1;
+    private const int stateChase = 0;
+    private const int stateWander = 1;
+    private const int statePowerplay = 2;
+    private int state = stateUndefined;
+    private float timeInState = 0.0F;
+    private float timeToChaseFor;
+    public float minChaseTime = 7.5F;
+    public float maxChaseTime = 15.0F;
+    // --------------------------------------------------------
 
     private void ResetPathfindingData()
     {
@@ -37,6 +55,7 @@ public class BasicEnemyScript : MonoBehaviour
 
     private void UpdateFloorTile()
     {
+
         // Makes sure that all colliders are on the same tile, and if they are, sets that tile as the current floor tile.
         List<Collider2D> tilesCollidedNorthEast = new List<Collider2D>();
         List<Collider2D> tilesCollidedNorthWest = new List<Collider2D>();
@@ -81,7 +100,30 @@ public class BasicEnemyScript : MonoBehaviour
                     references++;
                     if (references == 4)
                     {
-                        CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                        if (CurrentFloorTile != null)
+                        {
+                            if (CurrentFloorTile != objectsCollidedWith[i].gameObject)
+                            {
+                                if (PreviousFloorTile != null)
+                                {
+                                    if (objectsCollidedWith[i].gameObject != PreviousFloorTile)
+                                    {
+                                        PreviousFloorTile = CurrentFloorTile;
+                                        CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                                    }
+                                }
+                                else
+                                {
+                                    PreviousFloorTile = CurrentFloorTile;
+                                    CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                                }
+                                
+                            }
+                        }
+                        else
+                        {
+                            CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                        }
                         break;
                     }
                 }
@@ -95,16 +137,20 @@ public class BasicEnemyScript : MonoBehaviour
         PlayerFloorTile = Player.GetComponent<playerScript>().currentFloorTile;
     }
 
-    private GameObject AStar()
+    private bool IsTileValid(GameObject _tile)
+    {
+        return _tile.tag == "Floor" && !_tile.GetComponent<EnvironmentBlockScript>().Closed && _tile != PreviousFloorTile;
+    }
+
+    private GameObject AStar(GameObject _destinationTile)
     {
         // We need to define the path to the player, and then return the first tile in that path.
         // --- SETUP ---
 
         UpdateFloorTile();
-        UpdatePlayerFloorTile();
 
         SourceTile = CurrentFloorTile;
-        DestinationTile = PlayerFloorTile;
+        DestinationTile = _destinationTile;
 
         CurrentTile = SourceTile;
         MoveToOpenList(CurrentTile, 0);
@@ -122,7 +168,7 @@ public class BasicEnemyScript : MonoBehaviour
             bool northValid = false;
             if (northTile != null)
             {
-                northValid = (northTile.tag == "Floor" && !northTile.GetComponent<EnvironmentBlockScript>().Closed);
+                northValid = IsTileValid(northTile);
                 if (northValid)
                 {
                     MoveToOpenList(northTile, currentGCost + 10);
@@ -134,7 +180,7 @@ public class BasicEnemyScript : MonoBehaviour
             bool eastValid = false;
             if (eastTile != null)
             {
-                eastValid = (eastTile.tag == "Floor" && !eastTile.GetComponent<EnvironmentBlockScript>().Closed);
+                eastValid = IsTileValid(eastTile);
                 if (eastValid)
                 {
                     MoveToOpenList(eastTile, currentGCost + 10);
@@ -146,7 +192,7 @@ public class BasicEnemyScript : MonoBehaviour
             bool southValid = false;
             if (southTile != null)
             {
-                southValid = (southTile.tag == "Floor" && !southTile.GetComponent<EnvironmentBlockScript>().Closed);
+                southValid = IsTileValid(southTile);
                 if (southValid)
                 {
                     MoveToOpenList(southTile, currentGCost + 10);
@@ -158,7 +204,7 @@ public class BasicEnemyScript : MonoBehaviour
             bool westValid = false;
             if (westTile != null)
             {
-                westValid = (westTile.tag == "Floor" && !westTile.GetComponent<EnvironmentBlockScript>().Closed);
+                westValid = IsTileValid(westTile);
                 if (westValid)
                 {
                     MoveToOpenList(westTile, currentGCost + 10);
@@ -213,10 +259,68 @@ public class BasicEnemyScript : MonoBehaviour
         return CurrentTile;
     }
 
-    private void Pathfinding()
+    private void PathfindPlayer()
     {
         ResetPathfindingData();
-        SeekPosition(AStar().GetComponent<Transform>().position);
+        UpdatePlayerFloorTile();
+        SeekPosition(AStar(PlayerFloorTile).GetComponent<Transform>().position);
+    }
+
+    private void PathfindRandomTile()
+    {
+        ResetPathfindingData();
+        SeekPosition(AStar(RandomTile).GetComponent<Transform>().position);
+    }
+
+    private GameObject RandomFloorTile()
+    {
+        GameObject[] floorTiles = GameObject.FindGameObjectsWithTag("Floor");
+        return floorTiles[Random.Range(0, floorTiles.Length)];
+    }
+
+    private GameObject RandomPowerupTile()
+    {
+        // Gets all powerups.
+        GameObject[] powerups = GameObject.FindGameObjectsWithTag("Powerup");
+        // Selects a random powerup.
+        GameObject powerup = powerups[Random.Range(0, powerups.Length)];
+        // Gets that powerup's collider.
+        CircleCollider2D powerupCollider = powerup.GetComponent<CircleCollider2D>();
+        // Populates objectsCollidedWith with the colliders colliding with powerupCollider.
+        List<Collider2D> objectsCollidedWith = new List<Collider2D>();
+        ContactFilter2D noFilter = new ContactFilter2D();
+        powerupCollider.OverlapCollider(noFilter, objectsCollidedWith);
+        // Defines tile as the tile that the powerup is colliding with.
+        GameObject tile = null;
+        for (int i = 0; i < objectsCollidedWith.Count; i++)
+        {
+            if (objectsCollidedWith[i].gameObject.tag == "Floor")
+            {
+                tile = objectsCollidedWith[i].gameObject;
+            }
+        }
+        // Returns that tile.
+        return tile;
+    }
+
+    private void TransitionTo(int _state)
+    {
+        switch (_state)
+        {
+            case stateChase:
+                state = stateChase;
+                timeToChaseFor = Random.Range(minChaseTime, maxChaseTime);
+                break;
+            case stateWander:
+                state = stateWander;
+                RandomTile = RandomFloorTile();
+                break;
+            case statePowerplay:
+                state = statePowerplay;
+                RandomTile = RandomPowerupTile();
+                break;
+        }
+        timeInState = 0.0F;
     }
 
     private void MoveToOpenList(GameObject _tile, int _GCost)
@@ -278,8 +382,55 @@ public class BasicEnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Seeks the first tile in the path towards the player defined by A* algorithm
-        Pathfinding();
+        timeInState += Time.deltaTime;
+        switch (state)
+        {
+            case stateUndefined:
+
+                // We need to find a state for the enemy
+                // Randomly choose another state
+                TransitionTo(Random.Range(stateChase, statePowerplay));
+                break;
+
+            case stateChase:
+
+                // Seeks the first tile in the path towards the player defined by A* algorithm
+                PathfindPlayer();
+                if (timeInState >= timeToChaseFor)
+                {
+                    // Go to a different random state
+                    do { TransitionTo(Random.Range(stateChase, statePowerplay)); }
+                    while (state == stateChase);
+                }
+                break;
+
+            case stateWander:
+                
+                // Seeks a tile selected when TransitionTo is called
+                PathfindRandomTile();
+                if (CurrentFloorTile == RandomTile)
+                {
+                    // Go to a different random state
+                    do { TransitionTo(Random.Range(stateChase, statePowerplay)); }
+                    while (state == stateWander);
+                }
+                break;
+
+            case statePowerplay:
+
+                // Chase a random power pellet
+                PathfindRandomTile();
+                // If we got to the power pellet, change state
+                if (CurrentFloorTile == RandomTile)
+                {
+                    // Go to a different random state
+                    do { TransitionTo(Random.Range(stateChase, statePowerplay)); }
+                    while (state == statePowerplay);
+                }
+                break;
+        }
+
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -303,7 +454,7 @@ public class BasicEnemyScript : MonoBehaviour
 
         GameObject.Find(capeName).transform.position = spawnPos;
 
-        // 1-20 inclusive
+        // 1-10 inclusive
         for (uint i = 1; i <= 10; i++)
         {
             capeName = "Enemy Cape Segment (" + i.ToString() + ")";
