@@ -213,10 +213,12 @@ public class playerScript : MonoBehaviour
     public void Respawn()
     {
         // Player respawns
-        this.transform.position = new Vector3(1.45f, -1.46f, 0.0f);
+        //this.transform.position = new Vector3(1.45f, -1.46f, 0.0f);
+        this.transform.position = GameObject.Find("WallSegment (110)").transform.position;
 
         velocity = new Vector2(1, 0) - new Vector2(0, 0);
-        Vector3 spawnPos = new Vector3(1.0f, -1.46f, 0.0f);
+        //Vector3 spawnPos = new Vector3(1.0f, -1.46f, 0.0f);
+        Vector3 spawnPos = GameObject.Find("WallSegment (110)").transform.position;
 
         // Respawn cape segments
         string capeName = "Cape Segment";
@@ -224,7 +226,7 @@ public class playerScript : MonoBehaviour
         GameObject.Find(capeName).transform.position = spawnPos;
 
         // 2-19 inclusive
-        for (uint i = 2; i <= 19; i++)
+        for (uint i = 2; i <= 9; i++)
         {
             capeName = "Cape Segment " + i.ToString();
             GameObject.Find(capeName).transform.position = spawnPos;

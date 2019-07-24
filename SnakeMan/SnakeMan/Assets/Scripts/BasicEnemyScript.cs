@@ -304,7 +304,7 @@ public class BasicEnemyScript : MonoBehaviour
         GameObject.Find(capeName).transform.position = spawnPos;
 
         // 1-20 inclusive
-        for (uint i = 1; i <= 20; i++)
+        for (uint i = 1; i <= 10; i++)
         {
             capeName = "Enemy Cape Segment (" + i.ToString() + ")";
 
