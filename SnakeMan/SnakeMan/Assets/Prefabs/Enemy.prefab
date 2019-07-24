@@ -52,7 +52,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 6
+  m_LinearDrag: 10
   m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -166,11 +166,14 @@ MonoBehaviour:
   northWestCollider: {fileID: 8406255750681048885}
   southEastCollider: {fileID: 7596208114326718701}
   southWestCollider: {fileID: 1810229851448326875}
+  Speed: 10
   CurrentFloorTile: {fileID: 0}
+  PreviousFloorTile: {fileID: 0}
   PlayerFloorTile: {fileID: 0}
   SourceTile: {fileID: 0}
   DestinationTile: {fileID: 0}
-  Speed: 10
+  minChaseTime: 7.5
+  maxChaseTime: 15
 --- !u!58 &365354962199890583
 CircleCollider2D:
   m_ObjectHideFlags: 0
