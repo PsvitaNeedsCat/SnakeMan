@@ -24,6 +24,16 @@ public class capeSegment : MonoBehaviour
                         GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
                     }
 
+                    if (collision.collider.tag == "Enemy 2")
+                    {
+                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "Enemy 3")
+                    {
+                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
                     break;
                 }
             case Mode.ENEMY:

@@ -11,7 +11,9 @@ public class BasicEnemyScript : MonoBehaviour
     private bool extensionActivated = false;
     private float powerupCooldown = 20.0f;
     private bool pelletCollected = false;
-    private float pelletCooldown = 0.5f;
+    private float pelletCooldown = 0.1f;
+
+    public int enemyNo;
 
     // USED FOR BASE FUNCTIONALITY
     // --------------------------------------------------------
@@ -433,7 +435,7 @@ public class BasicEnemyScript : MonoBehaviour
             if (pelletCooldown <= 0.0f)
             {
                 pelletCollected = false;
-                pelletCooldown = 0.5f;
+                pelletCooldown = 0.1f;
             }
         }
 
@@ -499,8 +501,35 @@ public class BasicEnemyScript : MonoBehaviour
 
                 Destroy(collision.gameObject);
 
-                globalScript.e1Score += 10;
-                GameObject.Find("eScore").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
+                switch (enemyNo)
+                {
+                    case 1:
+                        {
+                            globalScript.e1Score += 10;
+                            GameObject.Find("eScore").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
+
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            globalScript.e2Score += 10;
+                            GameObject.Find("e2Score").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
+
+                            break;
+                        }
+
+                    case 3:
+                        {
+                            globalScript.e3Score += 10;
+                            GameObject.Find("e3Score").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
+
+                            break;
+                        }
+
+                    default:
+                        break;
+                }
             }
         }
 
@@ -510,6 +539,31 @@ public class BasicEnemyScript : MonoBehaviour
 
             GameObject endOfCape = GameObject.Find("Enemy Cape Segment (10)");
             GameObject extraCape = GameObject.Find("Enemy Extra Segment");
+
+            switch (enemyNo)
+            {
+                case 1:
+                    break;
+
+                case 2:
+                    {
+                        endOfCape = GameObject.Find("2 Enemy Cape Segment (10)");
+                        extraCape = GameObject.Find("2 Enemy Extra Segment");
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        endOfCape = GameObject.Find("3 Enemy Cape Segment (10)");
+                        extraCape = GameObject.Find("3 Enemy Extra Segment");
+
+                        break;
+                    }
+
+                default:
+                    break;
+            }
 
             // Change distance joint
             extraCape.GetComponent<DistanceJoint2D>().connectedBody = endOfCape.GetComponent<Rigidbody2D>();
@@ -525,6 +579,90 @@ public class BasicEnemyScript : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Collides with other enemies
+        // Please don't look at how gross this is
+        switch (enemyNo)
+        {
+            case 1:
+                {
+                    if (collision.collider.tag == "Enemy 2")
+                    {
+                        // Respawn this and enemy 2
+                        Respawn();
+
+                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "Enemy 3")
+                    {
+                        Respawn();
+
+                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
+                    {
+                        Respawn();
+                    }
+
+                    break;
+                }
+
+            case 2:
+                {
+                    if (collision.collider.tag == "Enemy")
+                    {
+                        Respawn();
+
+                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "Enemy 3")
+                    {
+                        Respawn();
+
+                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
+                    {
+                        Respawn();
+                    }
+
+                    break;
+                }
+
+            case 3:
+                {
+                    if (collision.collider.tag == "Enemy")
+                    {
+                        Respawn();
+
+                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "Enemy 2")
+                    {
+                        Respawn();
+
+                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                    }
+
+                    if (collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "Enemy Cape Segment")
+                    {
+                        Respawn();
+                    }
+
+                    break;
+                }
+
+            default:
+                break;
+        }
+    }
+
     public void Respawn()
     {
         if (!isDead)
@@ -532,10 +670,68 @@ public class BasicEnemyScript : MonoBehaviour
             isDead = true;
 
             lives -= 1;
-            GameObject.Find("e1Lives").GetComponent<TextMesh>().text = lives.ToString();
+            switch (enemyNo)
+            {
+                case 1:
+                    {
+                        GameObject.Find("e1Lives").GetComponent<TextMesh>().text = lives.ToString();
+
+                        break;
+                    }
+
+                case 2:
+                    {
+                        GameObject.Find("e2Lives").GetComponent<TextMesh>().text = lives.ToString();
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        GameObject.Find("e3Lives").GetComponent<TextMesh>().text = lives.ToString();
+
+                        break;
+                    }
+
+                default:
+                    break;
+            }
         }
 
-        string capeName;
+        Vector3 spawnPos = GameObject.Find("FloorSegment (191)").transform.position;
+
+        string capeName = "";
+
+        switch (enemyNo)
+        {
+            case 1:
+                {
+                    capeName = "Enemy Cape Segment";
+
+                    break;
+                }
+
+            case 2:
+                {
+                    capeName = "2 Enemy Cape Segment";
+
+                    spawnPos = GameObject.Find("FloorSegment (190)").transform.position;
+
+                    break;
+                }
+
+            case 3:
+                {
+                    capeName = "3 Enemy Cape Segment";
+
+                    spawnPos = GameObject.Find("FloorSegment (63)").transform.position;
+
+                    break;
+                }
+
+            default:
+                break;
+        }
 
         if (lives <= 0)
         {
@@ -543,33 +739,100 @@ public class BasicEnemyScript : MonoBehaviour
             lives = 0;
             Destroy(this.gameObject);
 
-            capeName = "Enemy Cape Segment";
-
             Destroy(GameObject.Find(capeName));
 
-            for (uint i = 1; i <= 10; i++)
+            switch (enemyNo)
             {
-                capeName = "Enemy Cape Segment (" + i.ToString() + ")";
+                case 1:
+                    {
+                        for (uint i = 1; i <= 10; i++)
+                        {
+                            capeName = "Enemy Cape Segment (" + i.ToString() + ")";
 
-                Destroy(GameObject.Find(capeName));
+                            Destroy(GameObject.Find(capeName));
+                        }
+
+                        break;
+                    }
+
+                case 2:
+                    {
+                        for (uint i = 1; i <= 10; i++)
+                        {
+                            capeName = "2 Enemy Cape Segment (" + i.ToString() + ")";
+
+                            Destroy(GameObject.Find(capeName));
+                        }
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        for (uint i = 1; i <= 10; i++)
+                        {
+                            capeName = "3 Enemy Cape Segment (" + i.ToString() + ")";
+
+                            Destroy(GameObject.Find(capeName));
+                        }
+
+                        break;
+                    }
+
+                default:
+                    break;
             }
         }
 
         //Vector3 spawnPos = new Vector3(0.5f, 0.54f, 0.0f);
-        Vector3 spawnPos = GameObject.Find("FloorSegment (191)").transform.position;
 
         this.transform.position = spawnPos;
 
-        capeName = "Enemy Cape Segment";
-
         GameObject.Find(capeName).transform.position = spawnPos;
 
-        // 1-10 inclusive
-        for (uint i = 1; i <= 10; i++)
+        switch (enemyNo)
         {
-            capeName = "Enemy Cape Segment (" + i.ToString() + ")";
+            case 1:
+                {
+                    // 1-10 inclusive
+                    for (uint i = 1; i <= 10; i++)
+                    {
+                        capeName = "Enemy Cape Segment (" + i.ToString() + ")";
 
-            GameObject.Find(capeName).transform.position = spawnPos;
+                        GameObject.Find(capeName).transform.position = spawnPos;
+                    }
+
+                    break;
+                }
+
+            case 2:
+                {
+                    // 1-10 inclusive
+                    for (uint i = 1; i <= 10; i++)
+                    {
+                        capeName = "2 Enemy Cape Segment (" + i.ToString() + ")";
+
+                        GameObject.Find(capeName).transform.position = spawnPos;
+                    }
+
+                    break;
+                }
+
+            case 3:
+                {
+                    // 1-10 inclusive
+                    for (uint i = 1; i <= 10; i++)
+                    {
+                        capeName = "3 Enemy Cape Segment (" + i.ToString() + ")";
+
+                        GameObject.Find(capeName).transform.position = spawnPos;
+                    }
+
+                    break;
+                }
+
+            default:
+                break;
         }
 
         if (extensionActivated)
@@ -579,6 +842,31 @@ public class BasicEnemyScript : MonoBehaviour
 
             GameObject tether = GameObject.Find("Tether2");
             GameObject extraCape = GameObject.Find("Enemy Extra Segment");
+
+            switch (enemyNo)
+            {
+                case 1:
+                    break;
+
+                case 2:
+                    {
+                        tether = GameObject.Find("Tether3");
+                        extraCape = GameObject.Find("2 Enemy Extra Segment");
+
+                        break;
+                    }
+
+                case 3:
+                    {
+                        tether = GameObject.Find("Tether4");
+                        extraCape = GameObject.Find("3 Enemy Extra Segment");
+
+                        break;
+                    }
+
+                default:
+                    break;
+            }
 
             // Change distance joint
             extraCape.GetComponent<DistanceJoint2D>().connectedBody = tether.GetComponent<Rigidbody2D>();
