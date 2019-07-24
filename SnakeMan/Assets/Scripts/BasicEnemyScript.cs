@@ -28,6 +28,7 @@ public class BasicEnemyScript : MonoBehaviour
     public CircleCollider2D southEastCollider;
     public CircleCollider2D southWestCollider;
     public float Speed;
+    public Animator animator;
     // --------------------------------------------------------
 
     // USED FOR A* PATHFINDING
@@ -511,7 +512,33 @@ public class BasicEnemyScript : MonoBehaviour
                 break;
         }
 
-        
+        // set animation state
+        Vector2 frameVelocity = GetComponent<Rigidbody2D>().velocity;
+        if (Mathf.Abs(frameVelocity.x) > Mathf.Abs(frameVelocity.y))
+        {
+            animator.SetInteger("States", 0);
+            if (frameVelocity.x > 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+        }
+        else
+        {
+            if (frameVelocity.y > 0)
+            {
+                animator.SetInteger("States", 2);
+            }
+            else
+            {
+                animator.SetInteger("States", 1);
+            }
+        }
+
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -610,24 +637,26 @@ public class BasicEnemyScript : MonoBehaviour
         {
             case 1:
                 {
+                    
                     if (collision.collider.tag == "Enemy 2")
                     {
                         // Respawn this and enemy 2
-                        Respawn();
+                        StartRespawn();
 
-                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
 
                     if (collision.collider.tag == "Enemy 3")
                     {
-                        Respawn();
+                        StartRespawn();
 
-                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
+                    
 
                     if (collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
                     {
-                        Respawn();
+                        StartRespawn();
                     }
 
                     break;
@@ -635,23 +664,25 @@ public class BasicEnemyScript : MonoBehaviour
 
             case 2:
                 {
+                    
                     if (collision.collider.tag == "Enemy")
                     {
-                        Respawn();
+                        StartRespawn();
 
-                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
 
                     if (collision.collider.tag == "Enemy 3")
                     {
-                        Respawn();
+                        StartRespawn();
 
-                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
+                    
 
                     if (collision.collider.tag == "Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
                     {
-                        Respawn();
+                        StartRespawn();
                     }
 
                     break;
@@ -659,23 +690,25 @@ public class BasicEnemyScript : MonoBehaviour
 
             case 3:
                 {
+                    
                     if (collision.collider.tag == "Enemy")
                     {
-                        Respawn();
+                        StartRespawn();
 
-                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
 
                     if (collision.collider.tag == "Enemy 2")
                     {
-                        Respawn();
+                        StartRespawn();
 
-                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
+                    
 
                     if (collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "Enemy Cape Segment")
                     {
-                        Respawn();
+                        StartRespawn();
                     }
 
                     break;
@@ -686,8 +719,26 @@ public class BasicEnemyScript : MonoBehaviour
         }
     }
 
+    public void StartRespawn()
+    {
+        switch (animator.GetInteger("States"))
+        {
+            case 0:
+                animator.SetInteger("States", 3);
+                break;
+            case 1:
+                animator.SetInteger("States", 4);
+                break;
+            case 2:
+                animator.SetInteger("States", 5);
+                break;
+        }
+    }
+
     public void Respawn()
     {
+        animator.SetInteger("States", 0);
+
         if (!isDead)
         {
             isDead = true;

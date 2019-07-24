@@ -21,19 +21,18 @@ public class capeSegment : MonoBehaviour
                     // Player cape collides with enemy
                     if (collision.collider.tag == "Enemy")
                     {
-                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
 
                     if (collision.collider.tag == "Enemy 2")
                     {
-                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
 
                     if (collision.collider.tag == "Enemy 3")
                     {
-                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                        GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().StartRespawn();
                     }
-
                     break;
                 }
             case Mode.ENEMY:
@@ -41,7 +40,7 @@ public class capeSegment : MonoBehaviour
                     // Enemy cape collides with player
                     if (collision.collider.tag == "Player")
                     {
-                        GameObject.Find("Player").GetComponent<playerScript>().Respawn();
+                        GameObject.Find("Player").GetComponent<playerScript>().StartRespawn();
                     }
 
                     break;

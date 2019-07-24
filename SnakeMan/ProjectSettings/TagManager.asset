@@ -58,12 +58,12 @@ TagManager:
   - name: Cape Segments
     uniqueID: 3621347579
     locked: 0
-  - name: Player
-    uniqueID: 4070356935
-    locked: 0
   - name: Walls
     uniqueID: 4223596739
     locked: 0
   - name: HUD
     uniqueID: 3192918087
+    locked: 0
+  - name: Player
+    uniqueID: 4070356935
     locked: 0

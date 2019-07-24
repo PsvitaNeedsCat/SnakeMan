@@ -13,7 +13,7 @@ public class playerScript : MonoBehaviour
 
     // Pellet cooldown
     private bool pelletCollected = false;
-    private float pelletCooldown = 0.5f;
+    private float pelletCooldown = 0.1f;
 
     public GameObject currentFloorTile;
     public CircleCollider2D floorCollider;
@@ -27,6 +27,12 @@ public class playerScript : MonoBehaviour
     // Powerup timer
     private float powerupCooldown = 20.0f; // In seconds
     private bool extensionActivated = false;
+
+    // ANIMATION
+    // --------------------
+    public Animator animator;
+    // --------------------
+
 
     private void Awake()
     {
@@ -53,7 +59,7 @@ public class playerScript : MonoBehaviour
             if (pelletCooldown <= 0.0f)
             {
                 pelletCollected = false;
-                pelletCooldown = 0.5f;
+                pelletCooldown = 0.1f;
             }
         }
         if (lives <= 0)
@@ -132,7 +138,32 @@ public class playerScript : MonoBehaviour
             {
                 velocity = new Vector2(hSpeed, vSpeed);
             }
+
+            // Animation
+            // ------------------------
+            if (hSpeed > 0.0F)
+            {
+                animator.SetInteger("States", 0);
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+            else if (hSpeed < 0.0F)
+            {
+                animator.SetInteger("States", 0);
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+            else if (vSpeed > 0.0F)
+            {
+                animator.SetInteger("States", 2);
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+            else if (vSpeed < 0.0F)
+            {
+                animator.SetInteger("States", 1);
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+            // ------------------------
         }
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -176,7 +207,6 @@ public class playerScript : MonoBehaviour
     {
         // Player spawn is (1.45, -1.46)
         // Enemy spawn is (0.5, 0.54)
-
         // Collides with enemy
         if (collision.collider.tag == "Enemy")
         {
@@ -188,10 +218,10 @@ public class playerScript : MonoBehaviour
                 lives -= 1;
                 GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
 
-                GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
+                GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().StartRespawn();
 
                 // Respawn player
-                Respawn();
+                StartRespawn();
             }
         }
         if (collision.collider.tag == "Enemy 2")
@@ -203,9 +233,9 @@ public class playerScript : MonoBehaviour
                 lives -= 1;
                 GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
 
-                GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+                GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().StartRespawn();
 
-                Respawn();
+                StartRespawn();
             }
         }
         if (collision.collider.tag == "Enemy 3")
@@ -217,9 +247,9 @@ public class playerScript : MonoBehaviour
                 lives -= 1;
                 GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
 
-                GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+                GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().StartRespawn();
 
-                Respawn();
+                StartRespawn();
             }
         }
         if (collision.collider.tag == "Enemy Cape Segment" || collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
@@ -231,9 +261,24 @@ public class playerScript : MonoBehaviour
                 // Player loses life
                 lives -= 1;
                 GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
-
                 // Everyone should already be respawned
             }
+        }
+    }
+
+    public void StartRespawn()
+    {
+        switch (animator.GetInteger("States"))
+        {
+            case 0:
+                animator.SetInteger("States", 3);
+                break;
+            case 1:
+                animator.SetInteger("States", 4);
+                break;
+            case 2:
+                animator.SetInteger("States", 5);
+                break;
         }
     }
 
@@ -246,6 +291,9 @@ public class playerScript : MonoBehaviour
         this.transform.position = spawnPos;
 
         velocity = new Vector2(1, 0) - new Vector2(0, 0);
+
+        animator.SetInteger("States", 0);
+
         //Vector3 spawnPos = new Vector3(1.0f, -1.46f, 0.0f);
 
         // Respawn cape segments
