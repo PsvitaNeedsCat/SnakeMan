@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class BasicEnemyScript : MonoBehaviour
 {
+    // Variable BS
+    public int lives = 3;
+    private bool isDead = false;
+    private float deadCooldown = 1.0f;
+    private bool extensionActivated = false;
+    private float powerupCooldown = 20.0f;
+    private bool pelletCollected = false;
+    private float pelletCooldown = 0.5f;
+
     // USED FOR BASE FUNCTIONALITY
     // --------------------------------------------------------
     public CircleCollider2D northEastCollider;
@@ -382,6 +391,52 @@ public class BasicEnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isDead)
+        {
+            deadCooldown -= Time.deltaTime;
+
+            if (deadCooldown <= 0.0f)
+            {
+                isDead = false;
+                deadCooldown = 1.0f;
+            }
+        }
+
+        if (extensionActivated)
+        {
+            powerupCooldown -= Time.deltaTime;
+
+            if (powerupCooldown <= 0.0f)
+            {
+                extensionActivated = false;
+
+                // Change distance joint
+                // Get cape parts needed
+                GameObject tether = GameObject.Find("Tether2");
+                GameObject extraCape = GameObject.Find("Enemy Extra Segment");
+
+                // Change distance joint
+                extraCape.GetComponent<DistanceJoint2D>().connectedBody = tether.GetComponent<Rigidbody2D>();
+
+                // Change follow target
+                extraCape.GetComponent<followScript>().target = tether;
+
+                // Teleport
+                extraCape.transform.position = tether.transform.position;
+            }
+        }
+
+        if (pelletCollected)
+        {
+            pelletCooldown -= Time.deltaTime;
+
+            if (pelletCooldown <= 0.0f)
+            {
+                pelletCollected = false;
+                pelletCooldown = 0.5f;
+            }
+        }
+
         timeInState += Time.deltaTime;
         switch (state)
         {
@@ -390,6 +445,7 @@ public class BasicEnemyScript : MonoBehaviour
                 // We need to find a state for the enemy
                 // Randomly choose another state
                 TransitionTo(Random.Range(stateChase, statePowerplay));
+                //TransitionTo(statePowerplay);
                 break;
 
             case stateChase:
@@ -437,20 +493,74 @@ public class BasicEnemyScript : MonoBehaviour
     {
         if (collision.tag == "Pellet")
         {
+            if (!pelletCollected)
+            {
+                pelletCollected = true;
+
+                Destroy(collision.gameObject);
+
+                globalScript.e1Score += 10;
+                GameObject.Find("eScore").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
+            }
+        }
+
+        if (collision.tag == "Powerup")
+        {
             Destroy(collision.gameObject);
 
-            globalScript.e1Score += 10;
-            GameObject.Find("eScore").GetComponent<TextMesh>().text = globalScript.e1Score.ToString();
+            GameObject endOfCape = GameObject.Find("Enemy Cape Segment (10)");
+            GameObject extraCape = GameObject.Find("Enemy Extra Segment");
+
+            // Change distance joint
+            extraCape.GetComponent<DistanceJoint2D>().connectedBody = endOfCape.GetComponent<Rigidbody2D>();
+
+            // Change follow target
+            extraCape.GetComponent<followScript>().target = endOfCape;
+
+            // Teleport
+            extraCape.transform.position = endOfCape.transform.position;
+
+            powerupCooldown = 20.0f;
+            extensionActivated = true;
         }
     }
 
     public void Respawn()
     {
-        Vector3 spawnPos = new Vector3(0.5f, 0.54f, 0.0f);
+        if (!isDead)
+        {
+            isDead = true;
+
+            lives -= 1;
+            GameObject.Find("e1Lives").GetComponent<TextMesh>().text = lives.ToString();
+        }
+
+        string capeName;
+
+        if (lives <= 0)
+        {
+            // Destroy enemy
+            lives = 0;
+            Destroy(this.gameObject);
+
+            capeName = "Enemy Cape Segment";
+
+            Destroy(GameObject.Find(capeName));
+
+            for (uint i = 1; i <= 10; i++)
+            {
+                capeName = "Enemy Cape Segment (" + i.ToString() + ")";
+
+                Destroy(GameObject.Find(capeName));
+            }
+        }
+
+        //Vector3 spawnPos = new Vector3(0.5f, 0.54f, 0.0f);
+        Vector3 spawnPos = GameObject.Find("FloorSegment (191)").transform.position;
 
         this.transform.position = spawnPos;
 
-        string capeName = "Enemy Cape Segment";
+        capeName = "Enemy Cape Segment";
 
         GameObject.Find(capeName).transform.position = spawnPos;
 
@@ -460,6 +570,24 @@ public class BasicEnemyScript : MonoBehaviour
             capeName = "Enemy Cape Segment (" + i.ToString() + ")";
 
             GameObject.Find(capeName).transform.position = spawnPos;
+        }
+
+        if (extensionActivated)
+        {
+            extensionActivated = false;
+            powerupCooldown = 20.0f;
+
+            GameObject tether = GameObject.Find("Tether2");
+            GameObject extraCape = GameObject.Find("Enemy Extra Segment");
+
+            // Change distance joint
+            extraCape.GetComponent<DistanceJoint2D>().connectedBody = tether.GetComponent<Rigidbody2D>();
+
+            // Change follow target
+            extraCape.GetComponent<followScript>().target = tether;
+
+            // Teleport
+            extraCape.transform.position = tether.transform.position;
         }
     }
 }

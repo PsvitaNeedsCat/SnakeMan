@@ -188,7 +188,6 @@ public class playerScript : MonoBehaviour
                 lives -= 1;
                 GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
 
-                // Respawn enemy(s)
                 GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
 
                 // Respawn player
@@ -212,13 +211,14 @@ public class playerScript : MonoBehaviour
 
     public void Respawn()
     {
+        Vector3 spawnPos = GameObject.Find("FloorSegment (189)").transform.position;
+
         // Player respawns
         //this.transform.position = new Vector3(1.45f, -1.46f, 0.0f);
-        this.transform.position = GameObject.Find("WallSegment (110)").transform.position;
+        this.transform.position = spawnPos;
 
         velocity = new Vector2(1, 0) - new Vector2(0, 0);
         //Vector3 spawnPos = new Vector3(1.0f, -1.46f, 0.0f);
-        Vector3 spawnPos = GameObject.Find("WallSegment (110)").transform.position;
 
         // Respawn cape segments
         string capeName = "Cape Segment";

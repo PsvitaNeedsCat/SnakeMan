@@ -97,7 +97,7 @@ SpriteRenderer:
   m_SortingLayerID: -224610361
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 59c85955f610e044fb80a76bb7404338, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 09414b0a0ea87124eb1adfc192567548, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -162,15 +162,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a214d57bb414b949a06ced9494c9ada, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lives: 3
   northEastCollider: {fileID: 365354962199890583}
   northWestCollider: {fileID: 8406255750681048885}
   southEastCollider: {fileID: 7596208114326718701}
   southWestCollider: {fileID: 1810229851448326875}
+  Speed: 10
   CurrentFloorTile: {fileID: 0}
+  PreviousFloorTile: {fileID: 0}
   PlayerFloorTile: {fileID: 0}
   SourceTile: {fileID: 0}
   DestinationTile: {fileID: 0}
-  Speed: 10
+  minChaseTime: 7.5
+  maxChaseTime: 15
 --- !u!58 &365354962199890583
 CircleCollider2D:
   m_ObjectHideFlags: 0

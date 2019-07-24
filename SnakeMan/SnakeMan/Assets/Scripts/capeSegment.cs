@@ -31,7 +31,6 @@ public class capeSegment : MonoBehaviour
                     // Enemy cape collides with player
                     if (collision.collider.tag == "Player")
                     {
-                        GameObject.Find("Enemy").GetComponent<BasicEnemyScript>().Respawn();
                         GameObject.Find("Player").GetComponent<playerScript>().Respawn();
                     }
 
