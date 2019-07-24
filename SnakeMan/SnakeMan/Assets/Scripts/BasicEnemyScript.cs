@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+class tileData
+{
+    public GameObject tile;
+    public int references;
+}
+
 public class BasicEnemyScript : MonoBehaviour
 {
     // Variable BS
@@ -100,7 +106,7 @@ public class BasicEnemyScript : MonoBehaviour
             objectsCollidedWith.Add(tilesCollidedSouthWest[i]);
         }
 
-        int references = 0;
+        List<tileData> referenceData = new List<tileData>();
 
         if (objectsCollidedWith.Count > 0)
         {
@@ -108,34 +114,51 @@ public class BasicEnemyScript : MonoBehaviour
             {
                 if (objectsCollidedWith[i].gameObject.tag == "Floor" && objectsCollidedWith[i] != CurrentFloorTile)
                 {
-                    references++;
-                    if (references == 4)
+                    bool referenceRecorded = false;
+                    for (int j = 0; j < referenceData.Count; j++)
                     {
-                        if (CurrentFloorTile != null)
+                        if (objectsCollidedWith[i].gameObject == referenceData[j].tile)
                         {
-                            if (CurrentFloorTile != objectsCollidedWith[i].gameObject)
+                            // we've looked at this tile before
+                            referenceData[j].references++;
+                            referenceRecorded = true;
+
+                            if (referenceData[j].references == 4)
                             {
-                                if (PreviousFloorTile != null)
+                                if (CurrentFloorTile != null)
                                 {
-                                    if (objectsCollidedWith[i].gameObject != PreviousFloorTile)
+                                    if (CurrentFloorTile != objectsCollidedWith[i].gameObject)
                                     {
-                                        PreviousFloorTile = CurrentFloorTile;
-                                        CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                                        if (PreviousFloorTile != null)
+                                        {
+                                            if (objectsCollidedWith[i].gameObject != PreviousFloorTile)
+                                            {
+                                                PreviousFloorTile = CurrentFloorTile;
+                                                CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            PreviousFloorTile = CurrentFloorTile;
+                                            CurrentFloorTile = objectsCollidedWith[i].gameObject;
+                                        }
+
                                     }
                                 }
                                 else
                                 {
-                                    PreviousFloorTile = CurrentFloorTile;
                                     CurrentFloorTile = objectsCollidedWith[i].gameObject;
                                 }
-                                
                             }
+                            break;
                         }
-                        else
-                        {
-                            CurrentFloorTile = objectsCollidedWith[i].gameObject;
-                        }
-                        break;
+                    }
+                    if (!referenceRecorded)
+                    {
+                        tileData data = new tileData();
+                        data.tile = objectsCollidedWith[i].gameObject;
+                        data.references = 1;
+                        referenceData.Add(data);
                     }
                 }
             }
