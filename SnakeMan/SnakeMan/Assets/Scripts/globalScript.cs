@@ -8,6 +8,8 @@ public class globalScript : MonoBehaviour
 {
     public static int score = 0;
     public static int e1Score = 0;
+    public static int e2Score = 0;
+    public static int e3Score = 0;
 
     public float timer = 100; // In seconds
 

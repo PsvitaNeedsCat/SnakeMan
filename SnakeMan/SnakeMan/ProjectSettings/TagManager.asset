@@ -11,6 +11,10 @@ TagManager:
   - Pellet
   - Cape Segment
   - Enemy Cape Segment
+  - Enemy 2
+  - Enemy 3
+  - 2 Enemy Cape Segment
+  - 3 Enemy Cape Segment
   layers:
   - Default
   - TransparentFX
@@ -26,10 +30,10 @@ TagManager:
   - WorldObject(WALL)
   - Enemy
   - Enemy Cape Segments
-  - 
-  - 
-  - 
-  - 
+  - Enemy 2
+  - Enemy 3
+  - 2 Enemy Cape Segments
+  - 3 Enemy Cape Segments
   - 
   - 
   - 

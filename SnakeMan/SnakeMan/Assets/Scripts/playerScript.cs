@@ -194,7 +194,21 @@ public class playerScript : MonoBehaviour
                 Respawn();
             }
         }
-        else if (collision.collider.tag == "Enemy Cape Segment")
+        if (collision.collider.tag == "Enemy 2")
+        {
+            if (!isDead)
+            {
+                isDead = true;
+
+                lives -= 1;
+                GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
+
+                GameObject.Find("Enemy 2").GetComponent<BasicEnemyScript>().Respawn();
+
+                Respawn();
+            }
+        }
+        else if (collision.collider.tag == "Enemy Cape Segment" || collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
         {
             if (!isDead)
             {
@@ -211,6 +225,8 @@ public class playerScript : MonoBehaviour
 
     public void Respawn()
     {
+        isDead = true;
+
         Vector3 spawnPos = GameObject.Find("FloorSegment (189)").transform.position;
 
         // Player respawns
