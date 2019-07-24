@@ -74,9 +74,9 @@
 /reference:Library/ScriptAssemblies/Unity.TextMeshPro.dll
 /reference:Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll
 /reference:"C:/Program Files/Unity/Hub/Editor/2019.1.0f2/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll"
-/reference:D:/Users/callum.ups7885/Desktop/SnakeMan/SnakeMan/SnakeMan/SnakeMan/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll
-/reference:D:/Users/callum.ups7885/Desktop/SnakeMan/SnakeMan/SnakeMan/SnakeMan/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll
-/reference:D:/Users/callum.ups7885/Desktop/SnakeMan/SnakeMan/SnakeMan/SnakeMan/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll
+/reference:D:/Users/Samuel.For7933/Documents/GitHub/SnakeMan/SnakeMan/SnakeMan/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll
+/reference:D:/Users/Samuel.For7933/Documents/GitHub/SnakeMan/SnakeMan/SnakeMan/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll
+/reference:D:/Users/Samuel.For7933/Documents/GitHub/SnakeMan/SnakeMan/SnakeMan/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll
 /reference:"C:/Program Files/Unity/Hub/Editor/2019.1.0f2/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll"
 /reference:"C:/Program Files/Unity/Hub/Editor/2019.1.0f2/Editor/Data/NetStandard/compat/2.0.0/shims/netstandard/Microsoft.Win32.Primitives.dll"
 /reference:"C:/Program Files/Unity/Hub/Editor/2019.1.0f2/Editor/Data/NetStandard/compat/2.0.0/shims/netstandard/System.AppContext.dll"
