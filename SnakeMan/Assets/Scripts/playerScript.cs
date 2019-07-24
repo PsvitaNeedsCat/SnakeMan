@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class playerScript : MonoBehaviour
 {
     // Player's lives
-    private int lives = 3;
+    public int lives = 3;
     private bool isDead = false;
     private float deadCooldown = 1.0f;
 
@@ -208,7 +208,21 @@ public class playerScript : MonoBehaviour
                 Respawn();
             }
         }
-        else if (collision.collider.tag == "Enemy Cape Segment" || collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
+        if (collision.collider.tag == "Enemy 3")
+        {
+            if (!isDead)
+            {
+                isDead = true;
+
+                lives -= 1;
+                GameObject.Find("lives").GetComponent<TextMesh>().text = lives.ToString();
+
+                GameObject.Find("Enemy 3").GetComponent<BasicEnemyScript>().Respawn();
+
+                Respawn();
+            }
+        }
+        if (collision.collider.tag == "Enemy Cape Segment" || collision.collider.tag == "2 Enemy Cape Segment" || collision.collider.tag == "3 Enemy Cape Segment")
         {
             if (!isDead)
             {
@@ -225,8 +239,6 @@ public class playerScript : MonoBehaviour
 
     public void Respawn()
     {
-        isDead = true;
-
         Vector3 spawnPos = GameObject.Find("FloorSegment (189)").transform.position;
 
         // Player respawns
