@@ -95,16 +95,15 @@ public class BasicEnemyScript : MonoBehaviour
         PlayerFloorTile = Player.GetComponent<playerScript>().currentFloorTile;
     }
 
-    private GameObject AStar()
+    private GameObject AStar(GameObject _destinationTile)
     {
         // We need to define the path to the player, and then return the first tile in that path.
         // --- SETUP ---
 
         UpdateFloorTile();
-        UpdatePlayerFloorTile();
 
         SourceTile = CurrentFloorTile;
-        DestinationTile = PlayerFloorTile;
+        DestinationTile = _destinationTile;
 
         CurrentTile = SourceTile;
         MoveToOpenList(CurrentTile, 0);
@@ -213,10 +212,11 @@ public class BasicEnemyScript : MonoBehaviour
         return CurrentTile;
     }
 
-    private void Pathfinding()
+    private void PathfindPlayer()
     {
         ResetPathfindingData();
-        SeekPosition(AStar().GetComponent<Transform>().position);
+        UpdatePlayerFloorTile();
+        SeekPosition(AStar(PlayerFloorTile).GetComponent<Transform>().position);
     }
 
     private void MoveToOpenList(GameObject _tile, int _GCost)
@@ -279,7 +279,7 @@ public class BasicEnemyScript : MonoBehaviour
     void Update()
     {
         // Seeks the first tile in the path towards the player defined by A* algorithm
-        Pathfinding();
+        PathfindPlayer();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
